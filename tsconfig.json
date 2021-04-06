@@ -1,0 +1,21 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "jsx": "react",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "outDir": ".code",
+    "importHelpers": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "types": ["node"],
+    "rootDir": "src",
+    "baseUrl": "src",
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": ["node_modules"]
+}
