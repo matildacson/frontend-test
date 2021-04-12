@@ -107,8 +107,7 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
       return result
     }
 
-    handleCurrencyChange = (e : any) =>{
-      console.log(this.state.outputValue, this.state.inputValue, " input output")
+    handleCurrencyChange = (e : any) => {
       const code = e.target.value;
       const rate = this.getRateFromCurrencyCode(code)
 
