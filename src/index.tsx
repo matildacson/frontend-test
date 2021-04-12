@@ -15,6 +15,6 @@ const Wrapper = styled.div`
 
 const App: React.FC = () => 
         <Wrapper>
-                <Converter amount={10} initInputCode={'SEK'} initOutputCode={'EUR'}/>
+                <Converter amount={1} initInputCode={'SEK'} initOutputCode={'EUR'}/>
         </Wrapper>;
 render(<App />, document.getElementById('app'));
