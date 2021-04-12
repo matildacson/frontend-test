@@ -27,18 +27,19 @@ width: 50px;
   transform: rotate(90deg)
 }
 `
-
+// names with "1" in them are connected to the left side Currency
+// names with "2" in them are connected to the right side Currency
 type StateTypes = {
   error: null,
   isLoaded: boolean,
   rates: [],
   focus: 'input1' | 'input2' | 'none'
-  inputValue: number, 
-  outputValue: number,
-  inputCode: string,
-  outputCode: string,
-  inputRate: number,
-  outputRate: number
+  value1: number, 
+  value2: number,
+  code1: string,
+  code2: string,
+  rate1: number,
+  rate2: number
 }
 
 type ConverterPropTypes = {
@@ -56,12 +57,12 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
       isLoaded: false,
       rates: [],
       focus: 'none', 
-      inputValue: props.amount, 
-      outputValue: 0,
-      inputCode: props.initInputCode,
-      outputCode: props.initOutputCode,
-      inputRate: 0,
-      outputRate: 0
+      value1: props.amount, 
+      value2: props.amount,
+      code1: props.initInputCode,
+      code2: props.initOutputCode,
+      rate1: 0,
+      rate2: 0
     }
     
   }
@@ -71,15 +72,15 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
         .then(response => response.json())
         .then(
           (response) => {
-            const inputRate = response.rates[this.props.initInputCode]
-            const outputRate = response.rates[this.props.initOutputCode]
-            const outputValue = this.props.amount * inputRate / outputRate
+            const rate1 = response.rates[this.props.initInputCode]
+            const rate2 = response.rates[this.props.initOutputCode]
+            const value2 = this.props.amount * rate1 / rate2
             this.setState({
               isLoaded: true,
               rates: response.rates,
-              outputValue,
-              inputRate,
-              outputRate
+              value2,
+              rate1,
+              rate2
             });
           },
           (error) => {
@@ -92,17 +93,20 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
 
     }
 
+    // returns the rate corresponding to the right key
     getRateFromCurrencyCode = (cC : string) => {
       const rate = this.state.rates[cC]
       return rate
     }
 
+    // fetching the api data which is added to state
     componentDidMount() {
       this.getRates()
     }
 
+    //calculates output values depending on which input field is in focus
     calculateResult(value: number, rate: number) {
-      const outputR = this.state.focus === 'input1' ? this.state.outputRate : this.state.inputRate
+      const outputR = this.state.focus === 'input1' ? this.state.rate2 : this.state.rate1
       const result = value * rate / outputR
       return result
     }
@@ -113,22 +117,23 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
 
       this.state.focus === 'input1' && (
         this.setState({
-          inputCode: code,
-          inputRate: rate,
-          outputValue: this.calculateResult(this.state.inputValue, rate)
+          code1: code,
+          rate1: rate,
+          value2: this.calculateResult(this.state.value1, rate)
         })
       )
       this.state.focus === 'input2' && (
         this.setState({
-          outputCode: code,
-          outputRate: rate, 
-          inputValue: this.calculateResult(this.state.outputValue, rate)
+          code2: code,
+          rate2: rate, 
+          value1: this.calculateResult(this.state.value2, rate)
         })
       )
     }
 
-    // These focus functions is controlling which Currency is input and which is output.
-    // If you change the CurrencyValue or Currency of one, the othe  will contain output. 
+    // The focus functions are controlling which Currency is input and which is output.
+    // If you change the CurrencyValue or Currency of one, the other will contain output. 
+
     handleFocus1 = () => {
       this.setState({
         focus: 'input1'
@@ -143,13 +148,15 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
 
     handleValueChange = (e: any) => {
       const value = e.target.value
-      this.state.focus === 'input1' ? (
+      this.state.focus === 'input1' && 
       this.setState({
-        inputValue: value,
-        outputValue: this.calculateResult(value, this.state.inputRate)
-      })) : this.setState({
-          outputValue: value,
-          inputValue: this.calculateResult(value, this.state.outputRate)
+        value1: value,
+        value2: this.calculateResult(value, this.state.rate1)
+      })
+      this.state.focus === 'input2' &&  
+      this.setState({
+          value2: value,
+          value1: this.calculateResult(value, this.state.rate2)
         }) 
     }
 
@@ -157,16 +164,16 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
         return (
           <Container>
             <Currency 
-              value={this.state.inputValue} 
-              code={this.state.inputCode}
+              value={this.state.value1} 
+              code={this.state.code1}
               handleFocus={this.handleFocus1} 
               handleCurrencyChange={this.handleCurrencyChange} 
               handleValueChange={this.handleValueChange}
               />
             <Arrow><img src={arrow} alt="" height="30px"/></Arrow>
             <Currency 
-              value={this.state.outputValue} 
-              code={this.state.outputCode}
+              value={this.state.value2} 
+              code={this.state.code2}
               handleFocus={this.handleFocus2} 
               handleCurrencyChange={this.handleCurrencyChange} 
               handleValueChange={this.handleValueChange}
