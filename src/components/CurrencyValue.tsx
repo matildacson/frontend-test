@@ -1,6 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import {CurrencyProps} from './Currency';
+
 const CurrencyValueInput = styled.input`
 font-size: 1em;
 width: 100%;
@@ -17,15 +19,7 @@ const Currency = styled.div`
 display: flex;
 `;
 
-type CurrencyValueProps = {
-  handleValueChange: (e: any) => void,
-  handleCurrencyChange: (e: any) => void,
-  handleFocus: () => void,
-  code: string,
-  value: number
-}
-
-export const CurrencyValue = ( props: CurrencyValueProps) => 
+export const CurrencyValue = ( props: CurrencyProps) => 
     <Currency>
       <CurrencyValueInput className="edit" onFocus={props.handleFocus} value={props.value} type="number" onChange={props.handleValueChange}/>
       <Label htmlFor="edit">{props.code}</Label>

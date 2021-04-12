@@ -1,10 +1,9 @@
 import * as React from 'react';
 
-// As I couldn't get the currency names from the API
-// I downloaded this json from https://gist.github.com/Fluidbyte/2973986
-import CurrenciesList from '../CommonCurrency.json';
 import styled from 'styled-components';
-import { CurrencyValue } from './CurrencyValue';
+
+import { Currency } from "./Currency";
+import arrow from "../assets/exchange.png"
 
 const Container = styled.div`
 font-size: 1em;
@@ -28,17 +27,6 @@ width: 50px;
   transform: rotate(90deg)
 }
 `
-
-const Div = styled.div`
-padding: 20px;
-`;
-
-const Select = styled.select`
-border: none;
-border-radius: 5px;
-padding: 2px;
-margin: 10px 0px;`
-;
 
 type StateTypes = {
   error: null,
@@ -68,7 +56,7 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
       isLoaded: false,
       rates: [],
       focus: 'none', 
-      inputValue: 10, 
+      inputValue: props.amount, 
       outputValue: 0,
       inputCode: props.initInputCode,
       outputCode: props.initOutputCode,
@@ -89,7 +77,6 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
             this.setState({
               isLoaded: true,
               rates: response.rates,
-              inputValue: this.props.amount,
               outputValue,
               inputRate,
               outputRate
@@ -120,8 +107,7 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
       return result
     }
 
-    handleCurrencyChange = (e : any) =>{
-      console.log(this.state.outputValue, this.state.inputValue, " input output")
+    handleCurrencyChange = (e : any) => {
       const code = e.target.value;
       const rate = this.getRateFromCurrencyCode(code)
 
@@ -141,7 +127,8 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
       )
     }
 
-
+    // These focus functions is controlling which Currency is input and which is output.
+    // If you change the CurrencyValue or Currency of one, the othe  will contain output. 
     handleFocus1 = () => {
       this.setState({
         focus: 'input1'
@@ -167,20 +154,23 @@ export class Converter extends React.Component<ConverterPropTypes, StateTypes> {
     }
 
     render(){
-        const currencyList= Object.values(CurrenciesList).map(currency => 
-            <option key={currency.code} value={currency.code}>{currency.name_plural}</option>
-        )
         return (
           <Container>
-            <Div>
-              <Select onFocus={this.handleFocus1} value={this.state.inputCode} onChange={this.handleCurrencyChange} >{currencyList}</Select>
-              <CurrencyValue handleFocus={this.handleFocus1} code={this.state.inputCode} value={this.state.inputValue} handleValueChange={this.handleValueChange} handleCurrencyChange={this.handleCurrencyChange}/>
-            </Div>
-            <Arrow></Arrow>
-            <Div>
-              <Select onFocus={this.handleFocus2} value={this.state.outputCode} onChange={this.handleCurrencyChange} >{currencyList}</Select>
-              <CurrencyValue handleFocus={this.handleFocus2} code={this.state.outputCode} value={this.state.outputValue} handleValueChange={this.handleValueChange} handleCurrencyChange={this.handleCurrencyChange}/>
-            </Div>
+            <Currency 
+              value={this.state.inputValue} 
+              code={this.state.inputCode}
+              handleFocus={this.handleFocus1} 
+              handleCurrencyChange={this.handleCurrencyChange} 
+              handleValueChange={this.handleValueChange}
+              />
+            <Arrow><img src={arrow} alt="" height="30px"/></Arrow>
+            <Currency 
+              value={this.state.outputValue} 
+              code={this.state.outputCode}
+              handleFocus={this.handleFocus2} 
+              handleCurrencyChange={this.handleCurrencyChange} 
+              handleValueChange={this.handleValueChange}
+              />
           </Container>
         
         )
